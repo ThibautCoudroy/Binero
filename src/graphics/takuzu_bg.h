@@ -25,7 +25,7 @@
 #define takuzu_bg takuzu_bgPLN0
 extern const unsigned char takuzu_bg_top[];
 extern const unsigned char takuzu_bg_bot[];
-extern const unsigned char metasprite_tile[];
+extern const unsigned char normal_cell[];
 extern const unsigned char takuzu_bg_center[];
 extern const unsigned char takuzu_bg_tubes_l0[];
 extern const unsigned char takuzu_bg_tubes_l1[];

@@ -232,7 +232,7 @@ bool solve_board(bool update_board_statement) {
 }
 
 void update_loading_bar() {
-    progress++;
+    if (progress<8) progress++;
     set_sprite_prop(progress + 29, 6);
 }
 

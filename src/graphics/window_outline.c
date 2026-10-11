@@ -9,21 +9,21 @@ void draw_window(uint8_t x, uint8_t y, uint8_t w, uint8_t h, bool bkg){
     uint8_t temp = y+h-1;
     uint8_t temp2 = x+w-1;
     
-    set_tile(x, y, 76);
-    set_tile(x+1, y, 70);
-    set_tile(x, y+1, 73);
-    set_tile(temp2, y, 77);
-    set_tile(temp2, y+1, 75);
-    set_tile(x, temp, 79);
-    set_tile(x+1, temp, 72);
-    set_tile(temp2, temp, 78);
+    set_tile(x, y, 76+4);
+    set_tile(x+1, y, 70+4);
+    set_tile(x, y+1, 73+4);
+    set_tile(temp2, y, 77+4);
+    set_tile(temp2, y+1, 75+4);
+    set_tile(x, temp, 79+4);
+    set_tile(x+1, temp, 72+4);
+    set_tile(temp2, temp, 78+4);
 
     for(uint8_t i=x+2; i<temp2; i++) {
-        set_tile(i, y, 71);
-        set_tile(i, temp, 71);
+        set_tile(i, y, 71+4);
+        set_tile(i, temp, 71+4);
     }
     for(uint8_t i=y+2; i<temp; i++) {
-        set_tile(x, i, 74);
-        set_tile(temp2, i, 74);
+        set_tile(x, i, 74+4);
+        set_tile(temp2, i, 74+4);
     }
 }

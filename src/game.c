@@ -156,40 +156,19 @@ void setup_board(bool fixed_seed) {
     }
     cursor_x = 2;
     cursor_y = 2;
-    update_visual_board();
 }
 
 void setup_visual_board_cells() {
-    uint8_t col;
     // Change palette used for each cell
-    VBK_REG = 1;
     for(uint8_t i=0; i<12; i+=2) {
         for(uint8_t j=0; j<12; j+=2) {
-            col = board[j>>1][i>>1] & 3;
-            set_bkg_tile_xy(4 + i, 4 + j, col);
-            set_bkg_tile_xy(5 + i, 4 + j, col);
-            set_bkg_tile_xy(4 + i, 5 + j, col);
-            set_bkg_tile_xy(5 + i, 5 + j, col);
-        }
-    }
-    VBK_REG = 0;
-}
-
-#define LOCKS_SPR_BEG 8
-
-// TODO lock sprites
-void setup_visual_locks() {
-    // Sprites indicating original cells
-    uint8_t sprite_id=LOCKS_SPR_BEG;
-    for (uint8_t i=0; i<6; i++) {
-        for (uint8_t j=0; j<6; j++) {
-            if (board[j][i] > 3) {
-                if (sprite_id==40) break; // Avoid crashing game if not all locks can be shown
-                set_sprite_tile(sprite_id, 0x1F);
-                set_sprite_prop(sprite_id, 0);
-                move_sprite(sprite_id, (i<<4)+44, (j<<4)+51);
-                sprite_id++;
-            }
+            uint8_t cell = board[j>>1][i>>1];
+            uint8_t col = cell & 3;
+            uint8_t tmp[] = {col, col, col, col};
+            VBK_REG = 1;
+            set_bkg_tiles(4 + i, 4 + j, 2, 2, tmp);
+            VBK_REG = 0;
+            set_bkg_based_tiles(4 + i, 4 + j, 2, 2, normal_cell, cell & 4);
         }
     }
 }
@@ -209,10 +188,9 @@ void update_visual_board() {
     uint8_t col = board[cursor_y][cursor_x] & 3;
     uint8_t temp[4] = {col, col, col, col};
     set_bkg_tiles(2*cursor_x + 4, 2*cursor_y + 4, 2, 2, temp);
-
     // UPDATE FLAGS
     uint8_t tiles_values[12];
-    
+
     get_flags_color(0, tiles_values);
     set_bkg_tiles(4, 3, 12, 1, tiles_values);
     set_bkg_tiles(4, 16, 12, 1, tiles_values);
@@ -220,7 +198,6 @@ void update_visual_board() {
     get_flags_color(1, tiles_values);
     set_bkg_tiles(3, 4, 1, 12, tiles_values);
     set_bkg_tiles(16, 4, 1, 12, tiles_values);
-    
     VBK_REG = 0;
 }
 
@@ -327,9 +304,10 @@ void game_setup(bool fixed_seed) {
     // Drawing board window
     for(uint8_t i=0; i<18; i++) set_bkg_based_tiles(0, i, 20, 1, blank_0, TILES_OFFSET);
 
+    // Board cells
+    for(uint8_t i=0; i<6; i++) for(uint8_t j=0; j<6; j++) set_bkg_tiles(4+2*i, 4+2*j, 2, 2, normal_cell);
+    
     // Board borders
-    for(uint8_t i=0; i<6; i++) for(uint8_t j=0; j<6; j++) set_bkg_tiles(4+2*i, 4+2*j, 2, 2, metasprite_tile);
-
     set_bkg_tiles(4, 3, 12, 1, takuzu_bg_top);
     set_bkg_tiles(4, 16, 12, 1, takuzu_bg_bot);
 
@@ -353,7 +331,6 @@ void game_setup(bool fixed_seed) {
     // Setting up sprites
     set_sprite_palette(0, 7, sprites_palette);              // Palettes
     gb_decompress_sprite_data(0, sprites_tiles_compressed); // Decompress sprites data
-    set_sprite_data(0x1f, 1, sprite_lock); // "lock" sprite
 
     cursor_setup();
     visual_tile_setup();
@@ -400,7 +377,6 @@ void game_setup(bool fixed_seed) {
     // Game starts
     load_puzzle_music();
     hide_text();
-    setup_visual_locks();
     update_visual_cursor();
 
 }

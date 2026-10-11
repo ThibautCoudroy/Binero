@@ -52,16 +52,6 @@ const unsigned char sprites_tiles_compressed[] =
   0xFC, 0xFE, 0x00, 0x00
 };
 
-const unsigned char sprite_lock[] = {
-  // 0, 0, 0, 0,
-  // 0x18, 0x18, 0x3C, 0x3C,
-  // 0x3C, 0x3C, 0x18, 0x18,
-  // 0, 0, 0, 0,
-  0,0,0,0,0,0,
-  0,0x18,0,0x18,
-  0,0,0,0,0,0,
-};
-
 // unsigned char sprites_tiles[] =
 // {
 //   // CURSOR

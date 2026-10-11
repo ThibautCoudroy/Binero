@@ -100,6 +100,5 @@
 
 /* Start of tile array. */
 extern const unsigned char sprites_tiles_compressed[];
-extern const unsigned char sprite_lock[];
 
 /* End of TAKUZU_SPRITES.H */
