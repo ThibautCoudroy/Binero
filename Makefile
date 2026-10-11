@@ -1,5 +1,5 @@
 # LCC path may be different
-lcc=../../GBDK/gbdk/bin/lcc.exe
+lcc=../../GBDK/gbdk_2026/bin/lcc.exe
 # Max allocs can be changed depending on space optimizations needed
 opt=-Wa-l -Wf--max-allocs-per-node10000 -Wl-m -Wl-j -c -o
 

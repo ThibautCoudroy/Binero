@@ -23,30 +23,30 @@ const uint8_t reg_values_1[] = {
 };
 
 // Puts on audio output
-void sound_on() {
+void sound_on(void) {
     NR52_REG = 0x80;
     NR51_REG = 0xFF;
     NR50_REG = 0x77;
 }
 
-void sound_off() {
+void sound_off(void) {
     NR52_REG = 0x00;
 }
 
-void update_audio() {
+void update_audio(void) {
     if(!(sound_state | music_state)) sound_off();
     else sound_on();
 }
 
-bool sound_value() {return sound_state;}
+bool sound_value(void) {return sound_state;}
 
-bool music_value() {return music_state;}
+bool music_value(void) {return music_state;}
 
-void switch_sound() {
+void switch_sound(void) {
     sound_state = !sound_state;
     update_audio();
 }
-void switch_music() {
+void switch_music(void) {
     music_state = !music_state;
     update_audio();
 }
@@ -68,24 +68,24 @@ void load_channel_2(uint8_t *values) {
     NR24_REG = values[3];
 }
 
-void play_sound_sel()         {load_channel_2(&reg_values_2[0]);}
-void play_sound_sel_valid()   {load_channel_2(&reg_values_2[4]);}
-void play_sound_char()        {load_channel_2(&reg_values_2[8]);}
-void play_sound_move_ok()     {load_channel_2(&reg_values_2[0]);}
-void play_sound_move()        {load_channel_2(&reg_values_2[12]);}
-void play_sound_move_ko()     {load_channel_1(&reg_values_1[0]);}
-void play_sound_pause_1()     {load_channel_2(&reg_values_2[16]);}
-void play_sound_pause_2()     {load_channel_2(&reg_values_2[20]);}
+void play_sound_sel(void)         {load_channel_2(&reg_values_2[0]);}
+void play_sound_sel_valid(void)   {load_channel_2(&reg_values_2[4]);}
+void play_sound_char(void)        {load_channel_2(&reg_values_2[8]);}
+void play_sound_move_ok(void)     {load_channel_2(&reg_values_2[0]);}
+void play_sound_move(void)        {load_channel_2(&reg_values_2[12]);}
+void play_sound_move_ko(void)     {load_channel_1(&reg_values_1[0]);}
+void play_sound_pause_1(void)     {load_channel_2(&reg_values_2[16]);}
+void play_sound_pause_2(void)     {load_channel_2(&reg_values_2[20]);}
 
-void load_puzzle_music() {
+void load_puzzle_music(void) {
     if(music_state) load_music(puzzle_music, puzzle_wave_pattern, 128, 324, true);
 }
 
-void load_win_music() {
+void load_win_music(void) {
     if(music_state) load_music(win_music, win_wave_pattern, 48, 300, false);
 }
 
-bool play_music() {
+bool play_music(void) {
     if(music_state) return update_music();
     return false;
 }

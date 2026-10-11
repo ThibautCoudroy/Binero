@@ -7,7 +7,7 @@
 #include "data/puzzles_data.h"
 
 #define NB_TILES_REMOVED 4
-#define NB_UNDO_MAX 8
+#define NB_UNDO_MAX 12
 
 uint8_t tiles_to_remove;    // Number of tiles removed each step
 uint8_t progress;
@@ -34,7 +34,7 @@ uint8_t lines_poss[][6] = {
     {2, 1, 1, 2, 1, 2}
 };
 
-void get_valid_sol() {
+void get_valid_sol(void) {
     uint8_t temp_board[6][6];
     uint8_t temp_lines[5];                  // 6th line is deduced from the other
     uint16_t board_id = randw() & 0x01FF;   // 512 pairs of boards
@@ -92,7 +92,7 @@ void get_valid_sol() {
 }
 
 // Remove "tiles_to_remove" tiles of the board
-void remove_tiles() {
+void remove_tiles(void) {
     uint8_t nb_removed = 0;
     while(nb_removed < tiles_to_remove) {
         // Replacing a tile by "0"
@@ -112,7 +112,7 @@ void remove_tiles() {
 }
 
 // Undo tiles removed at last step
-void undo_remove_tiles() {
+void undo_remove_tiles(void) {
     for(uint8_t i=0; i < tiles_to_remove; i++) {
         uint8_t* temp = removed_history[i];
         board_statement[temp[0]][temp[1]] = temp[2];
@@ -231,8 +231,8 @@ bool solve_board(bool update_board_statement) {
     return true;
 }
 
-void update_loading_bar() {
-    if (progress<8) progress++;
+void update_loading_bar(void) {
+    if (progress<10) progress++; // 10 sprites limit
     set_sprite_prop(progress + 29, 6);
 }
 

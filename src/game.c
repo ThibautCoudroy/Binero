@@ -134,8 +134,8 @@ uint16_t flicker_palettes_values[][3] =
     z : alternate col
 */
 
-void update_flags();
-void update_visual_board();
+void update_flags(void);
+void update_visual_board(void);
 
 void setup_board(bool fixed_seed) {
     // If fixed seed, don't regenerate board but copy board_init
@@ -158,7 +158,7 @@ void setup_board(bool fixed_seed) {
     cursor_y = 2;
 }
 
-void setup_visual_board_cells() {
+void setup_visual_board_cells(void) {
     // Change palette used for each cell
     for(uint8_t i=0; i<12; i+=2) {
         for(uint8_t j=0; j<12; j+=2) {
@@ -181,7 +181,7 @@ void get_flags_color(uint8_t j, uint8_t tiles_values[12]) {
     }
 }
 
-void update_visual_board() {
+void update_visual_board(void) {
     VBK_REG = 1;
 
     // UPDATE TILE
@@ -201,7 +201,7 @@ void update_visual_board() {
     VBK_REG = 0;
 }
 
-void update_visual_cursor() {
+void update_visual_cursor(void) {
     // Reset KO anim
     if(ko_move_cntdwn != 0) {
         for(uint8_t i=0; i<4; i++) {
@@ -217,7 +217,7 @@ void update_visual_cursor() {
     move_sprite(3, temp_x + 10, temp_y + 11);
 }
 
-void update_visual_tile() {
+void update_visual_tile(void) {
     if(ok_move_cntdwn==0) {
         for(uint8_t i=4; i<=7; i++) move_sprite(i, 0, 0);
         return;
@@ -240,14 +240,14 @@ void update_visual_tile() {
     ok_move_cntdwn--;
 }
 
-void visual_tile_setup() {
+void visual_tile_setup(void) {
     set_sprite_tile(4, 4);
     set_sprite_tile(5, 4);
     set_sprite_tile(6, 5);
     set_sprite_tile(7, 5);
 }
 
-void ko_move_cursor_anim() {
+void ko_move_cursor_anim(void) {
     if(ko_move_cntdwn == 0) return;
     uint8_t i;
     if(ko_move_cntdwn == 1) {
@@ -273,7 +273,7 @@ void ko_move_cursor_anim() {
     ko_move_cntdwn--;
 }
 
-void cursor_setup() {
+void cursor_setup(void) {
     set_sprite_tile(0, 0);
     set_sprite_tile(1, 0);
     set_sprite_prop(0, 0b00000000);
@@ -363,7 +363,7 @@ void game_setup(bool fixed_seed) {
     // Setting up board values
     setup_board(fixed_seed);
     if(fixed_seed && !first_gen) {
-        for(uint8_t i = 30; i <= 36; i++) set_sprite_prop(i, 6);
+        for(uint8_t i = 30; i <= 40; i++) set_sprite_prop(i, 6);
         delay(500);
     } else if(first_gen) first_gen = false;
 
@@ -381,7 +381,7 @@ void game_setup(bool fixed_seed) {
 
 }
 
-void move_cursor() {
+void move_cursor(void) {
     dir = joypad() & 0x0F; // Direction only
 
     // Holding
@@ -422,7 +422,7 @@ void move_cursor() {
     }
 }
 
-void cursor_animation() {
+void cursor_animation(void) {
     if(cursor_frame == 30) {
         set_sprite_tile(0, 2);
         set_sprite_tile(1, 2);
@@ -437,7 +437,7 @@ void cursor_animation() {
     }
 }
 
-void update_flags() {
+void update_flags(void) {
     uint8_t last_cols, list_state, res, val;
     uint8_t i, j, axis;
     /*list state :
@@ -503,7 +503,7 @@ void update_flags() {
     }
 }
 
-bool test_win() {
+bool test_win(void) {
     for(uint8_t i=0; i<12; i++) {
             // Testing every flag result (if triple OK). Bitshift if unused bits are garbage
             if(*(board_flags[0] + i) != 01) return false;
@@ -511,7 +511,7 @@ bool test_win() {
     return true;
 }
 
-bool action_change_tile() {
+bool action_change_tile(void) {
     tile = &board[cursor_y][cursor_x];
     // Tile is from init state
     if(*tile & 0xFC) return false;
@@ -535,7 +535,7 @@ bool action_change_tile() {
     return true;
 }
 
-bool undo() {
+bool undo(void) {
     if(last_move_id < 0) return false; // No history
     uint8_t data = last_moves[last_move_id];
     cursor_x = data >> 5;
@@ -550,7 +550,7 @@ bool undo() {
 }
 
 // Checks if player attempts to change tile
-bool press_a_b() {
+bool press_a_b(void) {
     ab = joypad() & 0x30; // AB only
     if(old_ab == ab) return true;
 
@@ -566,7 +566,7 @@ bool press_a_b() {
     return true;
 }
 
-void press_pause() {
+void press_pause(void) {
     if(!(joypad() & (J_START | J_SELECT))) return;
     game_state = pause();
 }
@@ -581,7 +581,7 @@ void flicker_palettes(bool alternate) {
     }
 }
 
-void update_win_anim() {
+void update_win_anim(void) {
     win_anim_frames++;
     if(win_anim_frames == 30) {
         flicker_palettes(true);

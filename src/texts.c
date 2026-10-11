@@ -5,31 +5,33 @@
 #define W_TILES_READY 7
 #define W_TILES_GO 4
 
-const uint8_t loading_bar[] = {0x1C, 0x1D, 0x1D, 0x1D, 0x1D, 0x1D, 0x1E};
+const uint8_t loading_bar[] = {0x1C, 0x1D, 0x1D, 0x1D, 0x1D, 0x1D, 0x1D, 0x1D, 0x1D, 0x1E};
 
-void setup_texts() {
+void setup_texts(void) {
     hide_text();
-    for(uint8_t i=8, j=6; i<37; i++, j++) {
+    for(uint8_t i=8, j=6; i<40; i++, j++) {
         set_sprite_tile(i, j);
         set_sprite_prop(i, 5);
     }
-    for(uint8_t i=0, j=8 + 2 * W_TILES_READY + 2 * W_TILES_GO; i<7; i++, j++) {
+    for(uint8_t i=0, j=8 + 2 * W_TILES_READY + 2 * W_TILES_GO; i<10; i++, j++) {
         set_sprite_tile(j, loading_bar[i]);
     }
 }
 
-void show_text_ready() {
+void show_text_ready(void) {
     for(uint8_t i=0; i<2 * W_TILES_READY; i++) {
+        // "Ready"
         move_sprite(i + 8, 62 + 8 * (i % W_TILES_READY), (i >= W_TILES_READY) ? 96 : 88);
-        if(i<7) move_sprite(i + 30, 60 + 8 * i, 104);
+        // Loading bar
+        if(i<10) move_sprite(i + 30, 61 + 5 * i, 104);
     }
 }
 
-void hide_text() {
+void hide_text(void) {
     for(uint8_t i = 0; i < 40; i++) hide_sprite(i);
 }
 
-void show_text_go() {
+void show_text_go(void) {
     for(uint8_t i = 0; i < 2 * W_TILES_GO; i++) {
         move_sprite(i + 2 * W_TILES_READY + 8, 74 + 8 * (i % W_TILES_GO), (i >= W_TILES_GO) ? 96 : 88);
     }

@@ -37,17 +37,17 @@ void update_visual_timer(bool bkg) {
     }
 }
 
-uint16_t time() {
+uint16_t time(void) {
     return time_frame;
 }
 
-void setup_timer() {
+void setup_timer(void) {
     time_sec = time_min = time_frame = 0;
     set_bkg_tiles(5, 1, 5, 1, text);
     update_visual_timer(true);
 }
 
-void update_timer() {
+void update_timer(void) {
     if(time_min == 18 && time_sec == 0) return;    // avoid overflow
     time_frame++;
     if((time_frame % 60) == 0) {

@@ -19,7 +19,7 @@
 
 #define LOGO_OFFSET 51
 
-void setup_menu_win();
+void setup_menu_win(void);
 
 uint16_t seed = 0;
 uint16_t code = 0;
@@ -44,7 +44,7 @@ uint8_t flicker_counter = 0;
 uint8_t char_count, char_range;
 uint8_t nb[4] = {0, 0, 0, 0};
 
-void intro_screen() {
+void intro_screen(void) {
     SHOW_BKG;
     HIDE_WIN;
     HIDE_SPRITES;
@@ -92,11 +92,11 @@ void intro_screen() {
     }
 }
 
-void show_char() {
+void show_char(void) {
     set_bkg_tile_xy(3 + char_id, 3 + 2 * new_time_pos, high_score_names[new_time_pos][char_id]);
 }
 
-void update_char_flicker() {
+void update_char_flicker(void) {
     if(flicker_counter >= 20) {
         set_bkg_tile_xy(3 + char_id, 3 + 2 * new_time_pos, 0x1B);
     } else {
@@ -104,13 +104,13 @@ void update_char_flicker() {
     }
 }
 
-void show_pass_char() {
+void show_pass_char(void) {
     // Offset to numbers or letters depending on hex value
     uint8_t temp = nb[char_id] < 10 ? (nb[char_id] + 28) : (nb[char_id] - 10);
     set_win_tile_xy(8 + char_id, 6, temp);
 }
 
-void update_pass_char_flicker() {
+void update_pass_char_flicker(void) {
     if(flicker_counter >= 20) {
         set_win_tile_xy(8 + char_id, 6, 0x1B);
     } else {
@@ -119,7 +119,7 @@ void update_pass_char_flicker() {
 }
 
 void text_input(uint8_t window) {
-    void (*show_text_char)();
+    void (*show_text_char)(void);
     if(window == 0) {
         char_count = 8;
         char_range = 27;
@@ -200,7 +200,7 @@ void text_input(uint8_t window) {
     }
 }
 
-void add_name() {
+void add_name(void) {
     // Temp name is "-" only
     for(uint8_t i=0; i<8; i++) high_score_names[new_time_pos][i] = 26;
     // Visual update
@@ -218,7 +218,7 @@ void set_score_time(uint8_t y, uint16_t time) {
     set_bkg_based_tiles(12, y, 5, 1, high_score_display + (min ? 0 : 3), 28);
 }
 
-void update_scores() {
+void update_scores(void) {
     for(uint8_t i=0; i<3; i++) {
         if(i != new_time_pos) {
             set_bkg_tiles(3, 3 + 2*i, 8, 1, &high_score_names[i][0]);
@@ -244,7 +244,7 @@ uint8_t add_score(uint16_t time) {
     return 3;
 }
 
-void menu_setup() {
+void menu_setup(void) {
     cpu_fast();
     setup_menu_win();
     SHOW_WIN;
@@ -270,14 +270,14 @@ void menu_setup() {
     waitpadup();
 }
 
-void setup_menu_win(){
+void setup_menu_win(void) {
     VBK_REG = 1;
     for(uint8_t i=0; i<18; i++) set_win_tiles(0, i, 20, 1, blank_0);
     VBK_REG = 0;
     for(uint8_t i=0; i<18; i++) set_win_tiles(0, i, 20, 1, blank_27);
 }
 
-uint8_t password_menu() {
+uint8_t password_menu(void) {
     // Load password window
     setup_menu_win();
     draw_window(4, 2, 12, 7, false);
@@ -322,21 +322,21 @@ uint8_t password_menu() {
     }
 }
 
-void update_visual_on_off() {
+void update_visual_on_off(void) {
     set_win_tiles(13, 11, 3, 1, sound_value() ? options_on : options_off);
     set_win_tiles(13, 13, 3, 1, music_value() ? options_on : options_off);
 }
 
-void update_visual_das() {
+void update_visual_das(void) {
     set_win_tile_xy(14, 9, das / 6 + 0x1C);
 }
 
-void show_das_text() {
+void show_das_text(void) {
     set_win_tiles(1, 3, 18, 1, options_text_das);
     set_win_tiles(3, 5, 13, 2, options_text_das2);
 }
 
-void options_menu() {
+void options_menu(void) {
     setup_menu_win();
     set_win_tiles(6, 1, 7, 1, menu_text + 32);
     set_win_tiles(6, 9, 5, 7, options_text);
@@ -404,7 +404,7 @@ void options_menu() {
     HIDE_WIN;
 }
 
-void rules_controls_menu() {
+void rules_controls_menu(void) {
     // Rules
     setup_menu_win();
     draw_window(7, 1, 7, 3, false);
@@ -426,7 +426,7 @@ void rules_controls_menu() {
     HIDE_WIN;
 }
 
-void menu() {
+void menu(void) {
     while(1) {
         menu_setup();
         uint8_t sel = 0;
@@ -502,7 +502,7 @@ void check_if_cgb(void) {
     }
 }
 
-void main() {
+void main(void) {
     DISPLAY_OFF;
     // Loading font
     set_1bpp_colors(3, 0);

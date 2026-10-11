@@ -26,7 +26,7 @@ const int16_t frequencies[] = { //values based on a formula used by the GB proce
     0,
 };
 
-void play_note() {
+void play_note(void) {
     uint8_t* n = &music_data[beat * 10];
 
     // CHANNEL 1
@@ -91,7 +91,7 @@ void load_music(uint8_t m_data[], uint8_t w_data[], uint8_t b_nb, uint16_t bpm, 
     play_note();    // Loads correctly song (first call doesn't make any sound)
 }
 
-bool update_music() {
+bool update_music(void) {
     frames++;
     if(frames == frames_delta) {
         frames = 0;

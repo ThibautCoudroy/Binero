@@ -25,7 +25,7 @@ const uint8_t pause_text[] = {
     M, E, N, U, __, __, __, __
 };
 
-uint8_t pause() {
+uint8_t pause(void) {
     update_visual_timer(false);
     set_win_tile_xy(4, 9, ARROW);
 
