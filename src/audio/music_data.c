@@ -23,17 +23,17 @@ enum instruments {
     NONE, SINE, CHIP, DRM1,
 };
 
-uint8_t puzzle_wave_pattern[] =
+const uint8_t puzzle_wave_pattern[] =
 {
     136, 136, 135, 101, 68, 51, 68, 103, 137, 172, 205, 220, 187, 169, 136, 136, 
 };
 
-uint8_t win_wave_pattern[] =
+const uint8_t win_wave_pattern[] =
 {
     137, 171, 187, 169, 153, 171, 187, 169, 134, 84, 68, 86, 102, 84, 68, 86, 
 };
 
-uint8_t puzzle_music[] = {
+const uint8_t puzzle_music[] = {
     // CHAN 1 & 2 : instrument, pitch, enveloppe
     // CHAN 3 : pitch, volume
     // CHAN 4 : instrument, enveloppe
@@ -176,7 +176,7 @@ uint8_t puzzle_music[] = {
     NONE, __, ____, NONE, __, ____, __, ____, NONE, ____,
 };
 
-uint8_t win_music[] = {
+const uint8_t win_music[] = {
     // CHAN 1 & 2 : instrument, pitch, enveloppe
     // CHAN 3 : pitch, volume
     // CHAN 4 : instrument, enveloppe

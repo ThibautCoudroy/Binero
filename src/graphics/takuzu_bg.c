@@ -24,10 +24,10 @@
 
 #define takuzu_bg takuzu_bgPLN0
 
-unsigned char takuzu_bg_top[] = {0x06 + 51,0x07 + 51,0x06 + 51,0x07 + 51,0x06 + 51,0x07 + 51,0x06 + 51,0x07 + 51,0x06 + 51,0x07 + 51,0x06 + 51,0x07 + 51};
-unsigned char takuzu_bg_bot[] = {0x0D + 51,0x0E + 51,0x0D + 51,0x0E + 51,0x0D + 51,0x0E + 51,0x0D + 51,0x0E + 51,0x0D + 51,0x0E + 51,0x0D + 51,0x0E + 51};
+const unsigned char takuzu_bg_top[] = {0x06 + 51,0x07 + 51,0x06 + 51,0x07 + 51,0x06 + 51,0x07 + 51,0x06 + 51,0x07 + 51,0x06 + 51,0x07 + 51,0x06 + 51,0x07 + 51};
+const unsigned char takuzu_bg_bot[] = {0x0D + 51,0x0E + 51,0x0D + 51,0x0E + 51,0x0D + 51,0x0E + 51,0x0D + 51,0x0E + 51,0x0D + 51,0x0E + 51,0x0D + 51,0x0E + 51};
 
-unsigned char metasprite_tile[] =
+const unsigned char metasprite_tile[] =
 {
   52,53,
   54,55
@@ -49,13 +49,13 @@ unsigned char metasprite_tile[] =
 //   0x03,0x04,0x03,0x04,0x03,0x04,0x03,0x04,0x03,0x04,0x03,0x04,
 // };
 
-unsigned char takuzu_bg_center[] =
+const unsigned char takuzu_bg_center[] =
 {
   3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3
 };
 
 // Also contains board's left border
-unsigned char takuzu_bg_tubes_l0[] =
+const unsigned char takuzu_bg_tubes_l0[] =
 {
   0x20 + 51,0x20 + 51,0x1E + 51,0x00 + 51,
   0x20 + 51,0x1F + 51,0x21 + 51,0x00 + 51,
@@ -77,7 +77,7 @@ unsigned char takuzu_bg_tubes_l0[] =
 };
 
 // Also contains board's right border
-unsigned char takuzu_bg_tubes_r0[] =
+const unsigned char takuzu_bg_tubes_r0[] =
 {
   0x00 + 51,0x00 + 51,0x1E + 51,0x20 + 51,
   0x08 + 51,0x00 + 51,0x21 + 51,0x1F + 51,
@@ -97,7 +97,7 @@ unsigned char takuzu_bg_tubes_r0[] =
   0x00 + 51,0x21 + 51,0x21 + 51,0x00 + 51
 };
 
-unsigned char takuzu_bg_tubes_l1[] =
+const unsigned char takuzu_bg_tubes_l1[] =
 {
   0x07,0x07,0x07,
   0x07,0x07,0x07,
@@ -119,7 +119,7 @@ unsigned char takuzu_bg_tubes_l1[] =
   0x67,0x07,0x27,
 };
 
-unsigned char takuzu_bg_tubes_r1[] =
+const unsigned char takuzu_bg_tubes_r1[] =
 {
   0x07,0x07,0x07,
   0x07,0x07,0x07,

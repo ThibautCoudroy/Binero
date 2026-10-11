@@ -24,7 +24,6 @@
 
 
 /* Bank of tiles. */
-#define fontBank 0
 #define A 0
 #define B 1
 #define C 2
@@ -52,6 +51,6 @@
 #define Y 24
 #define Z 25
 /* Start of tile array. */
-extern unsigned char font[];
+extern const unsigned char font[];
 
 /* End of FONT.H */

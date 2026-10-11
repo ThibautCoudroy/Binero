@@ -107,6 +107,6 @@ BLUE-PINK
 */
 
 /* Start of tile array. */
-extern unsigned char takuzu_tiles_compressed[];
+extern const unsigned char takuzu_tiles_compressed[];
 
 /* End of TAKUZU_TILES.H */

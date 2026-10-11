@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <rand.h>
 #include <gb/gb.h>
+#include <gb/cgb.h>
 #include "puzzles_gen.h"
 #include "data/puzzles_data.h"
 
@@ -9,7 +10,6 @@
 #define NB_UNDO_MAX 8
 
 uint8_t tiles_to_remove;    // Number of tiles removed each step
-uint8_t nb_undo;            // Number of times a necessary tile was removed
 uint8_t progress;
 uint8_t board_temp[6][6];
 uint8_t board_statement[6][6];
@@ -87,7 +87,7 @@ void get_valid_sol() {
         }
     }
 
-    // Solve last 6 cases
+    // Solve last 6 tiles
     solve_board(true);
 }
 
@@ -237,22 +237,26 @@ void update_loading_bar() {
 }
 
 void generate_board(uint8_t board[6][6]) {
+    cpu_fast();
     progress = 0;
     // STEP 1 : BOARD_STATEMENT GETS A VALID SOLUTION
     get_valid_sol();
 
     // STEP 2 : REMOVE TILES FROM STATEMENT
     tiles_to_remove = NB_TILES_REMOVED;
-    nb_undo = 0;
-    
-    while(nb_undo < NB_UNDO_MAX) {
+    uint8_t nb_undo = 0; // Number of times a necessary tile was removed
+    uint8_t nb_removed=0; // Make sure at least four tiles are removed
+
+    while(nb_undo < NB_UNDO_MAX || (nb_removed<4)) {
         remove_tiles();
         // If not solvable anymore, we undo
         if(!solve_board(false)) {
             undo_remove_tiles();
             nb_undo++;
             update_loading_bar();
-            if(tiles_to_remove != 1) tiles_to_remove--;  // Removing tiles more slowly
+            if(tiles_to_remove>1) tiles_to_remove--;  // Removing tiles more slowly
+        } else {
+            nb_removed += tiles_to_remove;
         }
     }
 
@@ -261,96 +265,7 @@ void generate_board(uint8_t board[6][6]) {
         uint8_t t = *(board_statement[0] + k);
         *(board[0] + k) = t ? t+4 : 0;
     }
+    
+    wait_vbl_done();
+    cpu_slow();
 }
-
-/*
-Board to try out every rule
-    {0,0,5,5,0,0},
-    {0,0,0,0,5,0},
-    {0,6,0,5,0,0},
-    {5,0,0,5,0,5},
-    {0,0,0,0,0,0},
-    {0,0,0,0,0,6},
-*/
-
-// uint8_t puzzle[][6][6] = {
-//     {{5, 6, 0, 5, 6, 6},
-//     {6, 5, 6, 6, 0, 0},
-//     {6, 5, 0, 5, 0, 0},
-//     {5, 6, 0, 6, 6, 0},
-//     {0, 0, 0, 5, 6, 0},
-//     {6, 6, 5, 0, 5, 5}}
-// };
-
-/*uint8_t puzzle[10][6][6] = {
-    {{0, 0, 0, 6, 0, 0},
-    {0, 0, 0, 0, 0, 5},
-    {0, 0, 0, 6, 0, 0},
-    {5, 0, 0, 0, 0, 5},
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 6, 6, 0, 0}
-    },
-    {{0, 0, 0, 6, 0, 0},
-    {0, 0, 0, 5, 0, 0},
-    {5, 0, 0, 0, 0, 0},
-    {5, 5, 0, 6, 0, 0},
-    {0, 5, 0, 0, 5, 5},
-    {6, 0, 0, 0, 0, 0}
-    },
-    {{0, 5, 0, 5, 0, 0},
-    {0, 0, 0, 0, 5, 0},
-    {5, 5, 0, 6, 5, 0},
-    {5, 0, 5, 0, 0, 0},
-    {0, 0, 0, 6, 0, 0},
-    {0, 0, 6, 0, 0, 0}
-    },
-    {{0, 0, 0, 0, 0, 0},
-    {0, 5, 0, 5, 0, 0},
-    {0, 5, 0, 5, 6, 0},
-    {0, 0, 5, 0, 6, 0},
-    {0, 0, 0, 0, 0, 0},
-    {5, 0, 5, 0, 0, 0}
-    },
-    {{5, 6, 0, 5, 6, 6},
-    {6, 5, 6, 6, 0, 0},
-    {6, 5, 0, 5, 0, 0},
-    {5, 6, 0, 6, 6, 0},
-    {0, 0, 0, 5, 6, 0},
-    {6, 6, 5, 0, 5, 5}
-    },
-    {{6, 5, 0, 0, 0, 0},
-    {0, 0, 6, 6, 0, 5},
-    {0, 0, 0, 0, 5, 0},
-    {5, 0, 5, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0},
-    {0, 0, 5, 5, 0, 6}
-    },
-    {{0, 0, 0, 0, 0, 0},
-    {0, 6, 0, 0, 6, 5},
-    {0, 0, 0, 0, 6, 0},
-    {0, 0, 6, 0, 0, 5},
-    {0, 6, 0, 6, 6, 0},
-    {0, 5, 6, 0, 0, 0}
-    },
-    {{0, 5, 0, 0, 0, 0},
-    {0, 6, 6, 0, 0, 5},
-    {5, 0, 6, 6, 0, 0},
-    {0, 5, 0, 0, 0, 5},
-    {0, 0, 0, 0, 0, 0},
-    {6, 0, 0, 5, 0, 0}
-    },
-    {{0, 0, 5, 0, 0, 6},
-    {0, 0, 0, 0, 5, 5},
-    {0, 0, 0, 0, 0, 0},
-    {6, 6, 0, 6, 0, 0},
-    {0, 0, 6, 6, 0, 0},
-    {0, 0, 5, 0, 6, 0}
-    },
-    {{0, 0, 0, 0, 0, 5},
-    {5, 0, 0, 0, 0, 6},
-    {0, 0, 6, 5, 0, 0},
-    {0, 0, 0, 0, 0, 6},
-    {0, 0, 5, 5, 0, 6},
-    {0, 0, 5, 0, 0, 0}
-    },
-};*/

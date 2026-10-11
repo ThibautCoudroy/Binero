@@ -6,7 +6,7 @@
 uint8_t time_sec, time_min;
 uint16_t time_frame;
 
-unsigned char text[] = {'t'-'a', 'i'-'a', 'm'-'a', 'e'-'a', '|'-'a'};    //"time "
+const unsigned char text[] = {'t'-'a', 'i'-'a', 'm'-'a', 'e'-'a', '|'-'a'};    //"time "
 
 // drawing bkg (true) or win (false)
 void update_visual_timer(bool bkg) {

@@ -1,11 +1,13 @@
 #include "puzzles_data.h"
 
+// 1024 "unique" puzzles (may be identical with rotation, mirror, colors swap)
 // Each puzzle is 2.5 bytes long (5 bytes = 2 puzzles)
-// Each half-byte contains value between 0 and 13 included corresponding to which line possibility it belongs to
+// Each half-byte contains an ID between 0 and 13 (included) corresponding to which line possibility it belongs to
+// (6th line is guessed from the five first)
 // Puzzle 1 : 11112222 33334444 5555xxxx xxxxxxxx xxxxxxxx
 // Puzzle 2 : xxxxxxxx xxxxxxxx xxxx1111 22223333 44445555
 
-uint8_t puzzle_data[512][5] =
+const uint8_t puzzle_data[512][5] =
 {
     {19, 171, 75, 39, 22},
     {13, 134, 16, 60, 107},

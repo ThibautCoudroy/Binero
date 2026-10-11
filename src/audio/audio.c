@@ -8,7 +8,7 @@ bool sound_state = true;
 bool music_state = true;
 
 // Register values of various sounds for channel 2
-uint8_t reg_values_2[] = {
+const uint8_t reg_values_2[] = {
     0x80, 0xF1, 0x06, 0x87,   //sel & move ok
     0x80, 0xF1, 0x73, 0x87,   //sel_valid
     0x80, 0xD1, 0x90, 0x87,   //char
@@ -18,7 +18,7 @@ uint8_t reg_values_2[] = {
 };
 
 // Register values of various sounds for channel 1
-uint8_t reg_values_1[] = {
+const uint8_t reg_values_1[] = {
     0x7A, 0x40, 0xF2, 0x28, 0x85,   //move_ko
 };
 

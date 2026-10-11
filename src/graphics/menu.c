@@ -14,12 +14,12 @@ const uint16_t menu_palette[] = {
     takuzu_tilesCGBPal3c0, takuzu_tilesCGBPal3c0, takuzu_tilesCGBPal3c0, takuzu_tilesCGBPal3c0
 };
 
-unsigned char menu_highscore[] =
+const unsigned char menu_highscore[] =
 {
   7, 8, 6, 7,__,18, 2,14,17, 4,
 };
 
-unsigned char menu_text[] =
+const unsigned char menu_text[] =
 {
   15,11, 0,24,__,__,__,__,
   __,__,__,__,__,__,__,__,

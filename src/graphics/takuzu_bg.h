@@ -23,13 +23,13 @@
 #define takuzu_bgBank 0
 
 #define takuzu_bg takuzu_bgPLN0
-extern unsigned char takuzu_bg_top[];
-extern unsigned char takuzu_bg_bot[];
-extern unsigned char metasprite_tile[];
-extern unsigned char takuzu_bg_center[];
-extern unsigned char takuzu_bg_tubes_l0[];
-extern unsigned char takuzu_bg_tubes_l1[];
-extern unsigned char takuzu_bg_tubes_r0[];
-extern unsigned char takuzu_bg_tubes_r1[];
+extern const unsigned char takuzu_bg_top[];
+extern const unsigned char takuzu_bg_bot[];
+extern const unsigned char metasprite_tile[];
+extern const unsigned char takuzu_bg_center[];
+extern const unsigned char takuzu_bg_tubes_l0[];
+extern const unsigned char takuzu_bg_tubes_l1[];
+extern const unsigned char takuzu_bg_tubes_r0[];
+extern const unsigned char takuzu_bg_tubes_r1[];
 
 /* End of TAKUZU_BG.H */

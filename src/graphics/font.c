@@ -45,7 +45,7 @@
 // };
 
 /* Start of tile array. */
-unsigned char font[] =
+const unsigned char font[] =
 {
   0x00,0x3C,0x62,0x62,
   0x7E,0x62,0x62,0x00,

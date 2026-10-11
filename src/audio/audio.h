@@ -1,8 +1,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-extern uint8_t reg_values[];
-
 extern void sound_on();
 extern void sound_off();
 extern bool sound_value();
