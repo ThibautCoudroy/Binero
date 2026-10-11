@@ -52,9 +52,16 @@ lcc_path -Wm-yn"BINERO" -Wa-l -Wl-m -Wl-j -Wm-yC -o export/binero.gb bin/*.o
 
 # Changelog
 
+## v2.0
+
+- Code optimizations (const data to avoid using RAM)
+- Misc (screen transitions flicker, cpu fast for puzzle generation)
+- Fix pause cheat
+- TODO : add locks and extra rules (new diff in options ?)
+
 ## v1.1
 
-- Added screen if not run as GameBoy Color
+- Added screen if not run on GameBoy Color
 - Added rules & controls screens in menu
 
 ## v1.0

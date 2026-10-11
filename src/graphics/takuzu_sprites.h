@@ -99,6 +99,7 @@
 #define sprites_tilesCGBPal7c3 5344
 
 /* Start of tile array. */
-extern unsigned char sprites_tiles_compressed[];
+extern const unsigned char sprites_tiles_compressed[];
+extern const unsigned char sprite_lock[];
 
 /* End of TAKUZU_SPRITES.H */

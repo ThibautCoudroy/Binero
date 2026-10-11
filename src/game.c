@@ -138,14 +138,10 @@ void update_flags();
 void update_visual_board();
 
 void setup_board(bool fixed_seed) {
-    // First time generating with fixed seed
-    if(fixed_seed && first_gen) {
-        // Generating in buffer
-        generate_board(board_init);
-    }
-    
     // If fixed seed, don't regenerate board but copy board_init
     if(fixed_seed) {
+        // Generating in buffer if fixed seed
+        if(first_gen) generate_board(board_init);
         for(uint8_t i=0; i<36; i++) *(board[0] + i) = *(board_init[0] + i);
     } else {
         // Setup next board using random value
@@ -163,19 +159,39 @@ void setup_board(bool fixed_seed) {
     update_visual_board();
 }
 
-void setup_visual_board() {
+void setup_visual_board_cells() {
     uint8_t col;
+    // Change palette used for each cell
     VBK_REG = 1;
-    for(uint8_t i=0; i<6; i++) {
-        for(uint8_t j=0; j<6; j++) {
-            col = board[j][i] & 3;
-            set_bkg_tile_xy(4 + 2*i, 4 + 2*j, col);
-            set_bkg_tile_xy(5 + 2*i, 4 + 2*j, col);
-            set_bkg_tile_xy(4 + 2*i, 5 + 2*j, col);
-            set_bkg_tile_xy(5 + 2*i, 5 + 2*j, col);
+    for(uint8_t i=0; i<12; i+=2) {
+        for(uint8_t j=0; j<12; j+=2) {
+            col = board[j>>1][i>>1] & 3;
+            set_bkg_tile_xy(4 + i, 4 + j, col);
+            set_bkg_tile_xy(5 + i, 4 + j, col);
+            set_bkg_tile_xy(4 + i, 5 + j, col);
+            set_bkg_tile_xy(5 + i, 5 + j, col);
         }
     }
     VBK_REG = 0;
+}
+
+#define LOCKS_SPR_BEG 8
+
+// TODO lock sprites
+void setup_visual_locks() {
+    // Sprites indicating original cells
+    uint8_t sprite_id=LOCKS_SPR_BEG;
+    for (uint8_t i=0; i<6; i++) {
+        for (uint8_t j=0; j<6; j++) {
+            if (board[j][i] > 3) {
+                if (sprite_id==40) break; // Avoid crashing game if not all locks can be shown
+                set_sprite_tile(sprite_id, 0x1F);
+                set_sprite_prop(sprite_id, 0);
+                move_sprite(sprite_id, (i<<4)+44, (j<<4)+51);
+                sprite_id++;
+            }
+        }
+    }
 }
 
 void get_flags_color(uint8_t j, uint8_t tiles_values[12]) {
@@ -293,6 +309,7 @@ void cursor_setup() {
 
 void game_setup(bool fixed_seed) {
     DISPLAY_OFF;
+    cpu_fast();
 
     // Setting up variables
     old_dir = frames_held = dir = mvt = 0;
@@ -336,6 +353,7 @@ void game_setup(bool fixed_seed) {
     // Setting up sprites
     set_sprite_palette(0, 7, sprites_palette);              // Palettes
     gb_decompress_sprite_data(0, sprites_tiles_compressed); // Decompress sprites data
+    set_sprite_data(0x1f, 1, sprite_lock); // "lock" sprite
 
     cursor_setup();
     visual_tile_setup();
@@ -355,6 +373,8 @@ void game_setup(bool fixed_seed) {
     for(uint8_t i=0; i<18; i++) set_win_tiles(0, i, 20, 1, blank_3);
     VBK_REG = 0;
     
+    cpu_slow();
+
     SHOW_SPRITES;
     SHOW_BKG;
     HIDE_WIN;
@@ -373,13 +393,14 @@ void game_setup(bool fixed_seed) {
     // Go screen
     hide_text();
     show_text_go();
-    setup_visual_board();
+    setup_visual_board_cells();
     play_sound_sel_valid();
     delay(1000);
 
     // Game starts
     load_puzzle_music();
     hide_text();
+    setup_visual_locks();
     update_visual_cursor();
 
 }
@@ -572,7 +593,6 @@ bool press_a_b() {
 void press_pause() {
     if(!(joypad() & (J_START | J_SELECT))) return;
     game_state = pause();
-    waitpadup();
 }
 
 void flicker_palettes(bool alternate) {
@@ -628,7 +648,7 @@ uint16_t game_screen(uint8_t das, bool fixed_seed) {
     if(game_state & 1) {    // Player won
         update_visual_timer(true);
         // Remove sprites & load music
-        HIDE_SPRITES;
+        for (uint8_t i=0; i<8; i++) hide_sprite(i);
         load_win_music();
         uint8_t music_finished = false;
         uint16_t timeout = 0;   // in case music is off
@@ -636,8 +656,6 @@ uint16_t game_screen(uint8_t das, bool fixed_seed) {
             update_win_anim();
 
             if(((win_anim_loops > 2) && joypad()) || (music_finished) || (timeout == 900)) {
-                waitpadup();
-                DISPLAY_OFF;
                 return time();
             }
 

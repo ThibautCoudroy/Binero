@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <rand.h>
 #include "game.h"
+#include "texts.h"
 #include "audio/audio.h"
 #include "graphics/blank.h"
 #include "graphics/font.h"
@@ -17,6 +18,8 @@
 #include "data/puzzles_data.h"
 
 #define LOGO_OFFSET 51
+
+void setup_menu_win();
 
 uint16_t seed = 0;
 uint16_t code = 0;
@@ -40,55 +43,6 @@ uint8_t char_id = 0;
 uint8_t flicker_counter = 0;
 uint8_t char_count, char_range;
 uint8_t nb[4] = {0, 0, 0, 0};
-
-uint8_t password_text[] =
-{
-    0x12, 0x13, 0x00, 0x11, 0x13,
-    0x1B, 0x1B, 0x1B, 0x1B, 0x1B,
-    0x04, 0x03, 0x08, 0x13, 0x1B,
-    0x1B, 0x1B, 0x1B, 0x1B, 0x1B,
-    0x0C, 0x04, 0x0D, 0x14, 0x1B,
-};
-
-uint8_t err_msg[] =
-{
-    T, H, I, S,27, G, A, M, E,27, I, S,27, O, N, L, Y,
-    D, E, S, I, G, N, E, D, 27,F, O, R,27, T, H, E,27,
-    27,G, A, M, E,27, B, O, Y,27, C, O, L, O, R,27,27,
-};
-
-uint8_t rules_header_text[] = {R, U, L, E, S};
-
-uint8_t rules_text[] =
-{
-    __,__, A, P, P, L, Y,__, F, O, R,__, R, O, W, S,
-    __,__,__, A, N, D,__, C, O, L, U, M, N, S,__,__,
-    __,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,
-    42,__, E, A, C, H,__, L, I, N, E,__, I, S,__,__,
-    __,__, D, I, F, F, E, R, E, N, T,__,__,__,__,__,
-    __,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,
-    43,__,31,__, B, L, U, E,__, A, N, D,__,31,__,__,
-    __,__, P, I, N, K,__, P, E, R,__, L, I, N, E,__,
-    __,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,
-    44,__, D, O,__, N, O, T,__, A, L, I, G, N,__,31,
-    __,__, B, L, U, E,__, O, R,__,31,__, P, I, N, K,
-};
-
-uint8_t controls_header_text[] = {C, O, N, T, R, O, L, S};
-
-uint8_t controls_text[] =
-{
-     A,__,26,__, C, H, A, N, G, E,__, T, I, L, E,39, S,
-    __,__,__,__, C, O, L, O, R,__,__,__,__,__,__,__,__,
-    __,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,
-     B,__,26,__, U, N, D, O,__, C, H, A, N, G, E,__,__,
-    __,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,
-     A, R, R, O, W, S,__,26,__, M, O, V, E,__,__,__,__,
-    __,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,
-     S, T, A, R, T,__,__,__,__,__,__,__,__,__,__,__,__,
-    __,__, O, R,__,__,__,26,__, P, A, U, S, E,__,__,__,
-     S, E, L, E, C, T,__,__,__,__,__,__,__,__,__,__,__,
-};
 
 void intro_screen() {
     SHOW_BKG;
@@ -251,6 +205,8 @@ void add_name() {
     for(uint8_t i=0; i<8; i++) high_score_names[new_time_pos][i] = 26;
     // Visual update
     set_bkg_tiles(3, 3 + 2*new_time_pos, 8, 1, &high_score_names[new_time_pos][0]);
+    
+    waitpadup();
     text_input(0);
 }
 
@@ -289,24 +245,27 @@ uint8_t add_score(uint16_t time) {
 }
 
 void menu_setup() {
-    DISPLAY_OFF;
-    HIDE_WIN;
+    cpu_fast();
+    setup_menu_win();
+    SHOW_WIN;
+    wait_vbl_done();
     set_bkg_palette(0, 3, menu_palette);
     // Loading game tiles and font with other colors only once
     set_1bpp_colors(2, 0);
     set_bkg_1bpp_data(41, 10, font + 224);
     gb_decompress_bkg_data(LOGO_OFFSET, takuzu_tiles_compressed);   // Takuzu tiles
-    VBK_REG = 0;
 
+    VBK_REG = 1;
+    for(uint8_t i=0; i<18; i++) set_bkg_tiles(0, i, 20, 1, blank_0);
+
+    VBK_REG = 0;
     for(uint8_t i=0; i<18; i++) set_bkg_tiles(0, i, 20, 1, blank_27);
     draw_window(2, 2, 16, 7, true);
     set_bkg_tiles(5, 1, 10, 1, menu_highscore);
     set_bkg_tiles(5, 10, 8, 7, menu_text);
-    
-    VBK_REG = 1;
-    for(uint8_t i=0; i<18; i++) set_bkg_tiles(0, i, 20, 1, blank_0);
-    VBK_REG = 0;
-    DISPLAY_ON;
+    wait_vbl_done();
+    HIDE_WIN;
+    cpu_slow();
     update_scores();
     waitpadup();
 }
@@ -457,10 +416,10 @@ void rules_controls_menu() {
     play_sound_sel_valid();
 
     // Controls
-    setup_menu_win();
+    wait_vbl_done();
     draw_window(5, 1, 10, 3, false);
     set_win_tiles(6, 2, 8, 1, controls_header_text);
-    set_win_tiles(1, 6, 17, 10, controls_text);
+    set_win_tiles(1, 5, 17, 11, controls_text);
     waitpad(0xFF);
     waitpadup();
     play_sound_sel_valid();
