@@ -71,6 +71,24 @@ const uint16_t sprites_palette[] = {
     0, 11627, 16912, 16165
 };
 
+const uint16_t flicker_palettes_values[][3] =
+{
+    {(7 << 8) + 1, 0x5ef7, 1057*26},
+    {(7 << 8) + 2, 0x4631, 1057*26},
+    {(7 << 8) + 3, 1057*14, 1057*18},
+    {(0 << 8) + 3, 0x0000, 0x739C},
+    {(1 << 8) + 3, 0x0000, 0x4210},
+    {(2 << 8) + 3, 0x0000, 0x4210},
+    {(3 << 8) + 3, 0x0000, 0x4210},
+    {(4 << 8) + 3, 0x0000, 0x4210},
+};
+/* flicker_palettes_values words
+    {x, y, z}
+    x : palette entry (first byte) & col id (second byte)
+    y : normal col
+    z : alternate col
+*/
+
 uint8_t board_init[6][6];
 
 uint8_t board[6][6];
@@ -114,25 +132,6 @@ bool first_gen;
 
 uint8_t win_anim_loops = 0;
 uint8_t win_anim_frames = 0;
-
-
-uint16_t flicker_palettes_values[][3] =
-{
-    {(7 << 8) + 1, 0x5ef7, 1057*26},
-    {(7 << 8) + 2, 0x4631, 1057*26},
-    {(7 << 8) + 3, 1057*14, 1057*18},
-    {(0 << 8) + 3, 0x0000, 0x739C},
-    {(1 << 8) + 3, 0x0000, 0x4210},
-    {(2 << 8) + 3, 0x0000, 0x4210},
-    {(3 << 8) + 3, 0x0000, 0x4210},
-    {(4 << 8) + 3, 0x0000, 0x4210},
-};
-/* flicker_palettes_values words
-    {x, y, z}
-    x : palette entry (first byte) & col id (second byte)
-    y : normal col
-    z : alternate col
-*/
 
 void update_flags(void);
 void update_visual_board(void);

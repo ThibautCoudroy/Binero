@@ -41,7 +41,6 @@ uint16_t high_score_times[] = {3600, 7200, 18000};
 uint8_t new_time_pos = 3;
 uint8_t char_id = 0;
 uint8_t flicker_counter = 0;
-uint8_t char_count, char_range;
 uint8_t nb[4] = {0, 0, 0, 0};
 
 void intro_screen(void) {
@@ -117,6 +116,8 @@ void update_pass_char_flicker(void) {
         show_pass_char();
     }
 }
+
+uint8_t char_count, char_range;
 
 void text_input(uint8_t window) {
     void (*show_text_char)(void);

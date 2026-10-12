@@ -7,16 +7,14 @@
 #include "data/puzzles_data.h"
 
 #define NB_TILES_REMOVED 4
-#define NB_UNDO_MAX 12
+#define NB_UNDO_MAX 13
 
-uint8_t tiles_to_remove;    // Number of tiles removed each step
-uint8_t progress;
 uint8_t board_temp[6][6];
 uint8_t board_statement[6][6];
 uint8_t removed_history[NB_TILES_REMOVED][3];
 bool solve_board(bool modif);
 
-uint8_t lines_poss[][6] = {
+const uint8_t lines_poss[][6] = {
     {1, 1, 2, 1, 2, 2},
     {1, 1, 2, 2, 1, 2},
     {1, 2, 1, 1, 2, 2},
@@ -91,10 +89,10 @@ void get_valid_sol(void) {
     solve_board(true);
 }
 
-// Remove "tiles_to_remove" tiles of the board
-void remove_tiles(void) {
+// Removes "tiles_removed_step" tiles of the board
+void remove_tiles(uint8_t tiles_removed_step) {
     uint8_t nb_removed = 0;
-    while(nb_removed < tiles_to_remove) {
+    while(nb_removed < tiles_removed_step) {
         // Replacing a tile by "0"
         uint8_t x = rand()%6;
         uint8_t y = rand()%6;
@@ -112,8 +110,8 @@ void remove_tiles(void) {
 }
 
 // Undo tiles removed at last step
-void undo_remove_tiles(void) {
-    for(uint8_t i=0; i < tiles_to_remove; i++) {
+void undo_remove_tiles(uint8_t tiles_removed_step) {
+    for(uint8_t i=0; i < tiles_removed_step; i++) {
         uint8_t* temp = removed_history[i];
         board_statement[temp[0]][temp[1]] = temp[2];
     }
@@ -142,6 +140,33 @@ bool solve_board(bool update_board_statement) {
                 }
                 // If not completed
                 if(hasZero) {
+                    uint8_t first_col = list1[0]; // 0 means no color
+                    uint8_t last_col = list1[5]; // 0 means no color
+                    // Same color at first and last position means opposite color next to them
+                    if (first_col && first_col == last_col) {
+                        if (!(list1[1] || list1[4])) {
+                            uint8_t col = 3-first_col;
+                            list1[1] = col;
+                            list1[4] = col;
+                            modif = true;
+                        }
+                    }
+                    // Same color at two first position then other means other color at last position
+                    // Or same color at first and 5th position means other color at last position
+                    else if (first_col && !last_col) {
+                        if ((first_col==list1[4]) || (first_col==list1[1] && first_col==3-list1[2])) {
+                            list1[5]=3-first_col;
+                            modif = true;
+                        }
+                    }
+                    // Symmetric as above
+                    else if (last_col && !first_col) {
+                        if ((last_col==list1[1]) || (last_col==list1[4] && last_col==3-list1[3])) {
+                            list1[0]=3-last_col;
+                            modif = true;
+                        }
+                    }
+
                     // Count colors
                     uint8_t cnt[3] = {0, 0, 0};
                     for(incr=0; incr<6; incr++) cnt[list1[incr]]++;
@@ -231,6 +256,7 @@ bool solve_board(bool update_board_statement) {
     return true;
 }
 
+uint8_t progress;
 void update_loading_bar(void) {
     if (progress<10) progress++; // 10 sprites limit
     set_sprite_prop(progress + 29, 6);
@@ -238,25 +264,25 @@ void update_loading_bar(void) {
 
 void generate_board(uint8_t board[6][6]) {
     cpu_fast();
-    progress = 0;
     // STEP 1 : BOARD_STATEMENT GETS A VALID SOLUTION
     get_valid_sol();
+    progress = 0;
 
     // STEP 2 : REMOVE TILES FROM STATEMENT
-    tiles_to_remove = NB_TILES_REMOVED;
+    uint8_t tiles_removed_step = NB_TILES_REMOVED;
     uint8_t nb_undo = 0; // Number of times a necessary tile was removed
-    uint8_t nb_removed=0; // Make sure at least four tiles are removed
+    uint8_t nb_removed = 0; // Make sure at least four tiles are removed
 
     while(nb_undo < NB_UNDO_MAX || (nb_removed<4)) {
-        remove_tiles();
+        remove_tiles(tiles_removed_step);
         // If not solvable anymore, we undo
         if(!solve_board(false)) {
-            undo_remove_tiles();
+            undo_remove_tiles(tiles_removed_step);
             nb_undo++;
             update_loading_bar();
-            if(tiles_to_remove>1) tiles_to_remove--;  // Removing tiles more slowly
+            if(tiles_removed_step>1) tiles_removed_step--;  // Removing tiles more slowly
         } else {
-            nb_removed += tiles_to_remove;
+            nb_removed += tiles_removed_step;
         }
     }
 

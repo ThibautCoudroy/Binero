@@ -12,8 +12,8 @@ void draw_window(uint8_t x, uint8_t y, uint8_t w, uint8_t h, bool bkg){
     set_tile(x, y, 76+4);
     set_tile(x+1, y, 70+4);
     set_tile(x, y+1, 73+4);
-    set_tile(temp2, y, 77+4);
     set_tile(temp2, y+1, 75+4);
+    set_tile(temp2, y, 77+4);
     set_tile(x, temp, 79+4);
     set_tile(x+1, temp, 72+4);
     set_tile(temp2, temp, 78+4);
