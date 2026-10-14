@@ -8,9 +8,9 @@
 #define __ 27
 
 const uint16_t menu_palette[] = {
-    takuzu_tilesCGBPal3c0, takuzu_tilesCGBPal3c1,
-    takuzu_tilesCGBPal3c2, takuzu_tilesCGBPal3c3,
-    takuzu_tilesCGBPal3c0, 0, 0, takuzu_tilesCGBPal7c3,
+    takuzu_tilesCGBPal3c0, takuzu_tilesCGBPal3c1, takuzu_tilesCGBPal3c2, takuzu_tilesCGBPal3c3,
+    takuzu_tilesCGBPal3c0, 0, 0, takuzu_tilesCGBPal3c2,
+    // 0b111110000000000, 0b111110000011111, 0b000001111111111, 0b111111111111111,
     takuzu_tilesCGBPal3c0, takuzu_tilesCGBPal3c0, takuzu_tilesCGBPal3c0, takuzu_tilesCGBPal3c0
 };
 

@@ -9,6 +9,10 @@
 #define NB_TILES_REMOVED 4
 #define NB_UNDO_MAX 13
 
+bool hard_mode = false;
+bool diff_value(void) {return hard_mode;}
+void switch_diff(void) {hard_mode = !hard_mode;}
+
 uint8_t board_temp[6][6];
 uint8_t board_statement[6][6];
 uint8_t removed_history[NB_TILES_REMOVED][3];
@@ -32,11 +36,13 @@ const uint8_t lines_poss[][6] = {
     {2, 1, 1, 2, 1, 2}
 };
 
+
 void get_valid_sol(void) {
     uint8_t temp_board[6][6];
     uint8_t temp_lines[5];                  // 6th line is deduced from the other
-    uint16_t board_id = randw() & 0x01FF;   // 512 pairs of boards
-    uint8_t rand_val = rand() & 1;          // indicates first or second board of the pair
+    uint16_t r_val = randw();
+    uint16_t board_id = r_val & 0x01FF;     // 512 pairs of unique boards
+    uint8_t rand_val = (r_val >> 15) & 1;   // indicates first or second board of the pair
     
     // Decode puzzle data
     for(uint8_t i = 0, j = rand_val * 5; i < 5; i++, j++) {
@@ -46,7 +52,7 @@ void get_valid_sol(void) {
     }
 
     // 50% chance of colors swap
-    if(rand()&1) {
+    if((r_val >> 14)&1) {
         // Shift 7 from each line possibility
         for(uint8_t i=0; i<6; i++) {
             temp_lines[i] = (temp_lines[i] + 7)%14;
@@ -54,7 +60,7 @@ void get_valid_sol(void) {
     }
 
     // 50% chance of copying mirror
-    rand_val = rand()&1;
+    rand_val = (r_val >> 13)&1;
     for(uint8_t l=0; l<5; l++) {
         for(uint8_t j=0; j<6; j++) {
             temp_board[l][j] = lines_poss[temp_lines[l]][(rand_val ? 5-j : j)];     // Copy the line into temp board
@@ -63,7 +69,7 @@ void get_valid_sol(void) {
     }
 
     // 25% chance for every rotation
-    rand_val = rand()&3;
+    rand_val = (r_val >> 11)&3;
     uint8_t t1, t2;
     for(uint8_t k=0; k<6; k++) {
         for(uint8_t m=0; m<6; m++) {
@@ -140,30 +146,32 @@ bool solve_board(bool update_board_statement) {
                 }
                 // If not completed
                 if(hasZero) {
-                    uint8_t first_col = list1[0]; // 0 means no color
-                    uint8_t last_col = list1[5]; // 0 means no color
-                    // Same color at first and last position means opposite color next to them
-                    if (first_col && first_col == last_col) {
-                        if (!(list1[1] || list1[4])) {
-                            uint8_t col = 3-first_col;
-                            list1[1] = col;
-                            list1[4] = col;
-                            modif = true;
+                    if (hard_mode) {
+                        uint8_t first_col = list1[0]; // 0 means no color
+                        uint8_t last_col = list1[5]; // 0 means no color
+                        // Same color at first and last position means opposite color next to them
+                        if (first_col && first_col == last_col) {
+                            if (!list1[1] || !list1[4]) {
+                                uint8_t col = 3-first_col;
+                                list1[1] = col;
+                                list1[4] = col;
+                                modif = true;
+                            }
                         }
-                    }
-                    // Same color at two first position then other means other color at last position
-                    // Or same color at first and 5th position means other color at last position
-                    else if (first_col && !last_col) {
-                        if ((first_col==list1[4]) || (first_col==list1[1] && first_col==3-list1[2])) {
-                            list1[5]=3-first_col;
-                            modif = true;
+                        // Same color at two first position then other means other color at last position
+                        // Or same color at first and 5th position means other color at last position
+                        else if (first_col && !last_col) {
+                            if ((first_col==list1[4]) || (first_col==list1[1] && first_col==3-list1[2])) {
+                                list1[5]=3-first_col;
+                                modif = true;
+                            }
                         }
-                    }
-                    // Symmetric as above
-                    else if (last_col && !first_col) {
-                        if ((last_col==list1[1]) || (last_col==list1[4] && last_col==3-list1[3])) {
-                            list1[0]=3-last_col;
-                            modif = true;
+                        // Symmetric as above
+                        else if (last_col && !first_col) {
+                            if ((last_col==list1[1]) || (last_col==list1[4] && last_col==3-list1[3])) {
+                                list1[0]=3-last_col;
+                                modif = true;
+                            }
                         }
                     }
 
@@ -200,36 +208,56 @@ bool solve_board(bool update_board_statement) {
                         }
                     }
 
-                    // Complete if two '0' left and another line has 4 in common
+                    // Fill based on completed lines
                     uint8_t cnt_0 = 6;
                     for(incr=0; incr<6; incr++) {
                         if(*(board_temp[0] + (axis ? 6*incr + i : incr + 6*i))) cnt_0--;
                     }
-                    if(cnt_0 == 2) {    // Two '0' left
+                    // - If two '0' left and another line has 4 in common
+                    // - If three '0' left and another line has 3 in common
+                    if(cnt_0 == 2 || cnt_0 == 3) {
                         for(uint8_t j=i+1; j<6; j++) {
-                            
+
                             hasZero = false;
 
                             // List2 copies the other line/column
                             for(incr=0; incr<6; incr++) {
                                 val = *(board_temp[0] + (axis ? 6*incr + j : incr + 6*j));
-                                if(val == 0) {
+                                if(val == 0) { // If not complete, test next line 
                                     hasZero = true;
                                     break;
                                 }
                                 list2[incr] = val;
                             }
                             if(!hasZero) {
-                                // Check if common
+                                // Check if common, else count the other cells
                                 uint8_t sum = 0;
+                                uint8_t count_ones=0;
                                 for(incr=0; incr<6; incr++) {
-                                    if(list1[incr] == list2[incr]) sum++;
+                                    if(list1[incr] == list2[incr]) {
+                                        sum++;
+                                        if(list1[incr]==1) count_ones++;
+                                    }
                                 }
 
-                                if(sum == 4) {
+                                if(cnt_0 == 2 && sum == 4) {
                                     for(incr=0; incr<6; incr++) {
                                         if(!list1[incr]) list1[incr] = 3 - list2[incr];
                                     }
+                                    modif = true;
+                                    break;
+                                }
+                                else if(hard_mode && cnt_0 == 3 && sum == 3) {
+                                    // 3 cells in common implies 2 of one color, 1 of the other (e.g. 12xxx2)
+                                    // and an empty cell can be filled with "other color" as well
+                                    // the one where the other line does not have "other color" (e.g. 121212 => 12x1x2)
+                                    // optim done: trick where the counter of ones also gives ID of cell to fill
+                                    for(incr=0; incr<6; incr++) {
+                                        if(!list1[incr] && list2[incr]!=count_ones) {
+                                            list1[incr] = count_ones;
+                                            break;
+                                        }
+                                    }             
                                     modif = true;
                                     break;
                                 }
@@ -275,6 +303,27 @@ void generate_board(uint8_t board[6][6]) {
 
     while(nb_undo < NB_UNDO_MAX || (nb_removed<4)) {
         remove_tiles(tiles_removed_step);
+
+        // DEBUG VISUALS
+        // COPY CURRENT STATE
+        // for(uint8_t i=0; i<12; i+=2) {
+        //     for(uint8_t j=0; j<12; j+=2) {
+        //         uint8_t cell = board_statement[j>>1][i>>1];
+        //         uint8_t col = cell & 3;
+        //         uint8_t tmp[] = {col, col, col, col};
+        //         VBK_REG = 1;
+        //         set_bkg_tiles(4 + i, 4 + j, 2, 2, tmp);
+        //         VBK_REG = 0;
+        //         const unsigned char normal_cell[] = {52,53,54,55};
+        //         set_bkg_based_tiles(4 + i, 4 + j, 2, 2, normal_cell, cell & 4);
+        //     }
+        // }
+        // if (!board_statement[0][1] && !board_statement[1][0] && tiles_removed_step==1 && nb_undo>9) {
+        //     solve_board(true);
+        //     waitpad(0xFF);
+        //     waitpadup();
+        // }
+
         // If not solvable anymore, we undo
         if(!solve_board(false)) {
             undo_remove_tiles(tiles_removed_step);

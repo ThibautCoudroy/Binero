@@ -7,6 +7,7 @@
 #include <rand.h>
 #include "game.h"
 #include "texts.h"
+#include "puzzles_gen.h"
 #include "audio/audio.h"
 #include "graphics/blank.h"
 #include "graphics/font.h"
@@ -258,10 +259,11 @@ void menu_setup(void) {
 
     VBK_REG = 1;
     for(uint8_t i=0; i<18; i++) set_bkg_tiles(0, i, 20, 1, blank_0);
+    set_bkg_tiles(5, 1, 10, 1, blank_1);
 
     VBK_REG = 0;
     for(uint8_t i=0; i<18; i++) set_bkg_tiles(0, i, 20, 1, blank_27);
-    draw_window(2, 2, 16, 7, true);
+    draw_window(2, 0, 16, 9, true);
     set_bkg_tiles(5, 1, 10, 1, menu_highscore);
     set_bkg_tiles(5, 10, 8, 7, menu_text);
     wait_vbl_done();
@@ -281,28 +283,28 @@ void setup_menu_win(void) {
 uint8_t password_menu(void) {
     // Load password window
     setup_menu_win();
-    draw_window(4, 2, 12, 7, false);
-    set_win_tiles(8, 11, 5, 5, password_text);
+    draw_window(5, 3, 10, 5, false);
+    set_win_tiles(8, 10, 5, 5, password_text);
     set_win_tiles(6, 4, 8, 1, menu_text + 16);
     for(char_id = 0; char_id < 4; char_id++) show_pass_char();
 
     SHOW_WIN;
     while(1) {
-        set_win_tile_xy(6, 13, 27);
+        set_win_tile_xy(6, 12, 27);
         text_input(1);
         waitpadup();
         // Player can go back to menu
         uint8_t sel = 0;
-        set_win_tile_xy(6, 11 + 2*sel, 38);
+        set_win_tile_xy(6, 10 + 2*sel, 38);
         while(1) {
             uint8_t buttons = joypad();
             bool cond1 = (buttons & J_UP) && sel>0;
             bool cond2 = (buttons & J_DOWN) && sel<2;
             if(cond1 | cond2) {
-                set_win_tile_xy(6, 11 + 2*sel, 27);
+                set_win_tile_xy(6, 10 + 2*sel, 27);
                 if(cond2) sel++;
                 else sel--;
-                set_win_tile_xy(6, 11 + 2*sel, 38);
+                set_win_tile_xy(6, 10 + 2*sel, 38);
                 play_sound_sel();
                 waitpadup();
             }
@@ -324,33 +326,38 @@ uint8_t password_menu(void) {
 }
 
 void update_visual_on_off(void) {
-    set_win_tiles(13, 11, 3, 1, sound_value() ? options_on : options_off);
-    set_win_tiles(13, 13, 3, 1, music_value() ? options_on : options_off);
+    set_win_tiles(13, 12, 3, 1, sound_value() ? options_on : options_off);
+    set_win_tiles(13, 14, 3, 1, music_value() ? options_on : options_off);
+}
+
+void update_visual_easy_hard(void) {
+    set_win_tiles(13, 10, 4, 1, options_text_diff_list + (diff_value() ? 4 : 0));
 }
 
 void update_visual_das(void) {
-    set_win_tile_xy(14, 9, das / 6 + 0x1C);
+    set_win_tile_xy(13, 8, das / 6 + 0x1C);
 }
 
-void show_das_text(void) {
-    set_win_tiles(1, 3, 18, 1, options_text_das);
-    set_win_tiles(3, 5, 13, 2, options_text_das2);
+void show_options_text(uint8_t* ref) {
+    set_win_tiles(3, 3, 14, 4, ref);
 }
+
 
 void options_menu(void) {
     setup_menu_win();
     set_win_tiles(6, 1, 7, 1, menu_text + 32);
-    set_win_tiles(6, 9, 5, 7, options_text);
+    set_win_tiles(5, 8, 5, 9, options_text);
 
     VBK_REG = 1;
     for(uint8_t i=3; i<7; i++) set_win_tiles(0, i, 20, 1, blank_1);
     VBK_REG = 0;
-    show_das_text();
+    show_options_text(options_text_das);
 
     update_visual_on_off();
+    update_visual_easy_hard();
     update_visual_das();
-    draw_window(3, 8, 14, 9, false);
-    set_win_tile_xy(4, 9, 38);
+    draw_window(5, 0, 9, 3, false);
+    set_win_tile_xy(3, 8, 38);
 
     SHOW_WIN;
 
@@ -358,14 +365,16 @@ void options_menu(void) {
     while(1) {
         uint8_t buttons = joypad();
         bool cond1 = (buttons & J_UP) && sel>0;
-        bool cond2 = (buttons & J_DOWN) && sel<3;
+        bool cond2 = (buttons & J_DOWN) && sel<4;
         if(cond1 | cond2) {
-            set_win_tile_xy(4, 9 + 2*sel, 27);
+            set_win_tile_xy(3, 8 + 2*sel, 27);
             if(cond2) sel++;
             else sel--;
-            set_win_tile_xy(4, 9 + 2*sel, 38);
+            set_win_tile_xy(3, 8 + 2*sel, 38);
             if(sel == 0) {
-                show_das_text();
+                show_options_text(options_text_das);
+            } else if(sel == 1) {
+                show_options_text(options_text_diff);
             } else {
                 for(uint8_t i=3; i<=6; i++) set_win_tiles(0, i, 20, 1, blank_27);
             }
@@ -384,18 +393,20 @@ void options_menu(void) {
                 play_sound_sel_valid();
                 waitpadup();
             }
-        } else if(sel == 3) {
+        } else if(sel == 4) {
             if(buttons & (J_SELECT | J_START | J_A)) {
                 waitpadup();
                 play_sound_sel_valid();
-                if(sel == 3) break;
+                break;
             }
         } else {
             if(buttons & (J_SELECT | J_START | J_A | J_LEFT | J_RIGHT)) {
-                if(sel == 1) switch_sound();
-                else if(sel == 2) switch_music();
+                if (sel==1) switch_diff();
+                if (sel == 2) switch_sound();
+                else if (sel == 3) switch_music();
 
                 update_visual_on_off();
+                update_visual_easy_hard();
                 play_sound_sel_valid();
                 waitpadup();
             }

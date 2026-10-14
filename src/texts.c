@@ -41,9 +41,9 @@ void show_text_go(void) {
 
 const uint8_t err_msg[] =
 {
-    T, H, I, S,27, G, A, M, E,27, I, S,27, O, N, L, Y,
-    D, E, S, I, G, N, E, D, 27,F, O, R,27, T, H, E,27,
-    27,G, A, M, E,27, B, O, Y,27, C, O, L, O, R,27,27,
+    T, H, I, S,__, G, A, M, E,__, I, S,__, O, N, L, Y,
+    D, E, S, I, G, N, E, D, __,F, O, R,__, T, H, E,__,
+    __,G, A, M, E,__, B, O, Y,__, C, O, L, O, R,__,__,
 };
 
 const uint8_t rules_header_text[] = {R, U, L, E, S};
@@ -82,9 +82,9 @@ const uint8_t controls_text[] =
 
 const uint8_t password_text[] =
 {
-    0x12, 0x13, 0x00, 0x11, 0x13,
-    0x1B, 0x1B, 0x1B, 0x1B, 0x1B,
-    0x04, 0x03, 0x08, 0x13, 0x1B,
-    0x1B, 0x1B, 0x1B, 0x1B, 0x1B,
-    0x0C, 0x04, 0x0D, 0x14, 0x1B,
+    S, T, A, R, T,
+    __, __, __, __, __,
+    E, D, I, T, __,
+    __, __, __, __, __,
+    M, E, N, U, __,
 };

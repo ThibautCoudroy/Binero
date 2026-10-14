@@ -57,7 +57,7 @@ lcc_path -Wm-yn"BINERO" -Wa-l -Wl-m -Wl-j -Wm-yC -o export/binero.gb bin/*.o
 - Code optimizations (const data to avoid using RAM)
 - Misc (screen transitions flicker, cpu fast for puzzle generation)
 - Fix pause cheat and visual reload bug when colored cell in (2, 2)
-- TODO : add extra rules (new diff in options ?)
+- New rules and puzzle difficulty in options
 
 ## v1.1
 

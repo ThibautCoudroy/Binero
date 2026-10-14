@@ -1,6 +1,6 @@
 #include "puzzles_data.h"
 
-// 1024 "unique" puzzles (may be identical with rotation, mirror, colors swap)
+// 1024 unique puzzles
 // Each puzzle is 2.5 bytes long (5 bytes = 2 puzzles)
 // Each half-byte contains an ID between 0 and 13 (included) corresponding to which line possibility it belongs to
 // (6th line is guessed from the five first)
