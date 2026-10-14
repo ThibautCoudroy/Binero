@@ -5,4 +5,4 @@
 // Puzzle 1 : 11112222 33334444 5555xxxx xxxxxxxx xxxxxxxx
 // Puzzle 2 : xxxxxxxx xxxxxxxx xxxx1111 22223333 44445555
 
-extern const uint8_t puzzle_data[512][5];
+extern const uint8_t puzzle_data[2048][5];

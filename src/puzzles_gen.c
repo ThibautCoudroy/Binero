@@ -38,58 +38,63 @@ const uint8_t lines_poss[][6] = {
 
 
 void get_valid_sol(void) {
-    uint8_t temp_board[6][6];
-    uint8_t temp_lines[5];                  // 6th line is deduced from the other
     uint16_t r_val = randw();
-    uint16_t board_id = r_val & 0x01FF;     // 512 pairs of unique boards
+    // set_bkg_tiles(30,31,2,1,&r_val);
+    uint16_t board_id = r_val & 0x01FF;     // 2048 pairs of unique boards
     uint8_t rand_val = (r_val >> 15) & 1;   // indicates first or second board of the pair
+    // 4096 puzzles, the 16 bit comes from the random removing of tiles, which depends on the 16 bit random
     
     // Decode puzzle data
     for(uint8_t i = 0, j = rand_val * 5; i < 5; i++, j++) {
-        temp_lines[i] = puzzle_data[board_id][j/2];
-        if(j&1) temp_lines[i] &= 0x0F;
-        else    temp_lines[i] >>= 4;
-    }
-
-    // 50% chance of colors swap
-    if((r_val >> 14)&1) {
-        // Shift 7 from each line possibility
-        for(uint8_t i=0; i<6; i++) {
-            temp_lines[i] = (temp_lines[i] + 7)%14;
-        }
-    }
-
-    // 50% chance of copying mirror
-    rand_val = (r_val >> 13)&1;
-    for(uint8_t l=0; l<5; l++) {
+        uint8_t temp_line = puzzle_data[board_id][j/2];
+        if(j&1) temp_line &= 0x0F;
+        else    temp_line >>= 4;
         for(uint8_t j=0; j<6; j++) {
-            temp_board[l][j] = lines_poss[temp_lines[l]][(rand_val ? 5-j : j)];     // Copy the line into temp board
-            temp_board[5][j] = 0;   // Last line is empty because it's gonna be deduced
+            board_statement[i][j] = lines_poss[temp_line][j];     // Copy the line into temp board
+            board_statement[5][j] = 0;   // Last line is empty because it's gonna be deduced
         }
     }
 
-    // 25% chance for every rotation
-    rand_val = (r_val >> 11)&3;
-    uint8_t t1, t2;
-    for(uint8_t k=0; k<6; k++) {
-        for(uint8_t m=0; m<6; m++) {
-            if(rand_val == 0) {
-                t1 = k;
-                t2 = m;
-            } else if(rand_val == 1) {
-                t1 = m;
-                t2 = 5-k;
-            } else if(rand_val == 2) {
-                t1 = 5-k;
-                t2 = 5-m;
-            } else {
-                t1 = 5-m;
-                t2 = k;
-            }
+    // Legacy code, useless now since all boards are stored in the cartridge
+    // // 50% chance of colors swap
+    // if((r_val >> 14)&1) {
+    //     // Shift 7 from each line possibility
+    //     for(uint8_t i=0; i<6; i++) {
+    //         temp_lines[i] = (temp_lines[i] + 7)%14;
+    //     }
+    // }
 
-            board_statement[k][m] = temp_board[t1][t2];
-        }
-    }
+    // // 50% chance of copying mirror
+    // rand_val = (r_val >> 13)&1;
+    // for(uint8_t l=0; l<5; l++) {
+    //     for(uint8_t j=0; j<6; j++) {
+    //         temp_board[l][j] = lines_poss[temp_lines[l]][(rand_val ? 5-j : j)];     // Copy the line into temp board
+    //         temp_board[5][j] = 0;   // Last line is empty because it's gonna be deduced
+    //     }
+    // }
+
+    // // 25% chance for every rotation
+    // rand_val = (r_val >> 11)&3;
+    // uint8_t t1, t2;
+    // for(uint8_t k=0; k<6; k++) {
+    //     for(uint8_t m=0; m<6; m++) {
+    //         if(rand_val == 0) {
+    //             t1 = k;
+    //             t2 = m;
+    //         } else if(rand_val == 1) {
+    //             t1 = m;
+    //             t2 = 5-k;
+    //         } else if(rand_val == 2) {
+    //             t1 = 5-k;
+    //             t2 = 5-m;
+    //         } else {
+    //             t1 = 5-m;
+    //             t2 = k;
+    //         }
+
+    //         board_statement[k][m] = temp_board[t1][t2];
+    //     }
+    // }
 
     // Solve last 6 tiles
     solve_board(true);
