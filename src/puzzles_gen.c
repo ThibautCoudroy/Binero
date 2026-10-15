@@ -40,8 +40,8 @@ const uint8_t lines_poss[][6] = {
 void get_valid_sol(void) {
     uint16_t r_val = randw();
     // set_bkg_tiles(30,31,2,1,&r_val);
-    uint16_t board_id = r_val & 0x01FF;     // 2048 pairs of unique boards
-    uint8_t rand_val = (r_val >> 15) & 1;   // indicates first or second board of the pair
+    uint16_t board_id = (r_val >> 5) & 0x01FF;     // 2048 pairs of unique boards
+    uint8_t rand_val = r_val & 1;   // indicates first or second board of the pair
     // 4096 puzzles, the 16 bit comes from the random removing of tiles, which depends on the 16 bit random
     
     // Decode puzzle data
